@@ -1,16 +1,15 @@
 package pers.yshy.tools;
 
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 读取excel文件数据，然后生成sql语句
@@ -135,13 +134,7 @@ public class ExcelData {
 	 * @return
 	 */
 	private static String checkVal(XSSFCell cell) {
-		if (cell == null) {
-			return "";
-		}
-		if (cell.getCellTypeEnum() == CellType.NUMERIC) {
-			return String.valueOf(cell.getNumericCellValue());
-		}
-		return cell.getStringCellValue().trim();
+		return checkVal(cell, false);
 	}
 
 	/**
@@ -153,15 +146,44 @@ public class ExcelData {
 	 * @Exception 如果列数据为null或者
 	 */
 	private static String checkVal(XSSFCell cell, boolean notNull) throws NullPointerException {
-		if (cell == null || cell.getStringCellValue().trim().isEmpty()) {
-			throw new NullPointerException("必填数据不能为空");
+		String res = "";
+		if (cell != null) {
+			CellType type = cell.getCellTypeEnum();
+			// 数字类型
+			if (type == CellType.NUMERIC) {
+				// 获取格式类型
+				short format = cell.getCellStyle().getDataFormat();
+				// 判断是否包含日期
+				if (DateUtil.isCellDateFormatted(cell)) {
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+					Date date = DateUtil.getJavaDate(cell.getNumericCellValue());
+					res = sdf.format(date);
+				} else {
+					// 判断数字，整数返回整数，浮点数返回浮点数
+					Double num = cell.getNumericCellValue();
+					if (num == num.intValue()) {
+						res = String.valueOf(num.intValue());
+					} else {
+						res = String.valueOf(num);
+					}
+				}
+			} else if (type == CellType.STRING) {
+				res = cell.getStringCellValue().trim();
+			}
 		}
-		if (cell.getCellTypeEnum() == CellType.NUMERIC) {
-			return String.valueOf(cell.getNumericCellValue());
+
+		if (res.isEmpty() && notNull) {
+			throw new NullPointerException("数据格式存在问题");
 		}
-		return cell.getStringCellValue().trim();
+
+		return res;
 	}
 
+	/**
+	 * 输出sql文件
+	 * @param tables
+	 * @throws IOException
+	 */
 	private static void writeData(List<Map> tables) throws IOException {
 		OutputStream os = null;
 		for (int i = 0; i < tables.size(); i++) {
@@ -191,8 +213,8 @@ public class ExcelData {
 				}
 				boolean key = structre.get("isKey").equals("Y");
 				// 是否存在默认值，如果是主键自增，就不能添加默认值
-				if (structre.get("default").equals("Y") && (!key || !autoIncrement)) {
-					str.append(" default " + structre.get("default"));
+				if (!structre.get("default").isEmpty() && (!key || !autoIncrement)) {
+					str.append(" default \"" + structre.get("default") + "\"");
 				}
 				// 主键，自增
 				if (key) {
