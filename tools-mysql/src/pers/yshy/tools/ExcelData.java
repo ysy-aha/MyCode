@@ -174,9 +174,9 @@ public class ExcelData {
 			boolean autoIncrement = table.get("autoIncrement").toString().equals("Y");
 			ArrayList<HashMap<String, String>> tableStructre = (ArrayList<HashMap<String, String>>) table.get("body");
 			// 删除已存在的表
-			str.append("drop table is exists" + tabName_en + ";\n");
+			str.append("drop table if exists `" + tabName_en + "`;\n");
 			// 组装创建表语句
-			str.append("create table if not exists " + tabName_en + "(\n");
+			str.append("create table if not exists `" + tabName_en + "` (\n");
 			for (int j = 0; j < tableStructre.size(); j++) {
 				HashMap<String, String> structre = tableStructre.get(j);
 				// 类型
@@ -206,7 +206,7 @@ public class ExcelData {
 				if (!structre.get("remark").isEmpty()) {
 					str.append(" " + structre.get("remark"));
 				}
-				str.append("\"\n");
+				str.append("\",\n");
 			}
 			if (keys.size() > 0) {
 				str.append("\tPRIMARY KEY (`");
@@ -216,7 +216,7 @@ public class ExcelData {
 				str.delete(str.length() - 1, str.length());
 				str.append(")\n");
 			}
-			str.append(") COMMENT \"" + table.get("tabName_zh").toString() + "\"");
+			str.append(") COMMENT \"" + table.get("tabName_zh").toString() + "\";");
 
 
 			File file = new File("tools-mysql/sql/" + tabName_en + ".sql");
