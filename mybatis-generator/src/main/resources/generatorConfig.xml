@@ -3,15 +3,26 @@
         PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 <generatorConfiguration>
+
+    <!-- 读取配置文件 -->
     <properties resource="generator.yml"/>
-    <context id="DBTables" targetRuntime="MyBatis3">
+
+    <!-- 用于指定生成一组对象的环境。子元素用于指定要连接的数据库、要生成的对象类型以及要内省的表。 -->
+    <context id="DBTables" targetRuntime="MyBatis3" defaultModelType="flat">
+
+        <!-- 操作注释 -->
         <commentGenerator>
+            <!-- 是否生成注释 -->
+            <!--<property name="suppressAllComments" value="true"/>-->
+            <!-- 是否生成时间戳注释 -->
             <property name="suppressDate" value="true"/>
-            <!-- 是否去除自动生成的注释 true：是 ： false:否 -->
-            <property name="suppressAllComments" value="true"/>
+            <!-- 是否根据字段生成注释 -->
+            <property name="addRemarkComments" value="true"/>
+            <!-- 时间戳的格式 -->
+            <property name="dateFormat" value="yyyy-MM-dd"/>
         </commentGenerator>
 
-        <!--数据库连接参数 -->
+        <!-- 数据库连接参数 -->
         <jdbcConnection
                 driverClass="${driverClassName}"
                 connectionURL="${url}"
@@ -19,6 +30,7 @@
                 password="${password}">
         </jdbcConnection>
 
+        <!--  Java 类型解析器 -->
         <javaTypeResolver>
             <!--  是否应该强制使用java.math.BigDecimal来处理 DECIMAL 和 NUMERIC 字段，而不是在可能的情况下替换整数类型 -->
             <property name="forceBigDecimals" value="false"/>
@@ -26,19 +38,18 @@
 
         <!-- 实体类的包名和存放路径 -->
         <javaModelGenerator targetPackage="pers.yshy.mybatis.entity" targetProject="src/main/java">
-            <property name="enableSubPackages" value="true"/>
+            <!-- 生成一个包含所有参数的构造函数 -->
+            <property name="constructorBased" value="true"/>
+            <!-- 去除固定长度的字段中的空格 -->
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
         <!-- 生成映射文件*.xml的位置-->
-        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources">
-            <property name="enableSubPackages" value="true"/>
-        </sqlMapGenerator>
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources"></sqlMapGenerator>
 
         <!-- 生成DAO的包名和位置 -->
-        <javaClientGenerator type="XMLMAPPER" targetPackage="pers.yshy.mybatis.mapper" targetProject="src/main/java">
-            <property name="enableSubPackages" value="true"/>
-        </javaClientGenerator>
+        <javaClientGenerator type="XMLMAPPER" targetPackage="pers.yshy.mybatis.mapper"
+                             targetProject="src/main/java"></javaClientGenerator>
 
         <!-- tableName：数据库中的表名或视图名；domainObjectName：生成的实体类的类名；mapperName：生成的mapper.xml文件
                 enableCountByExample：表示是否应生成count by example语句。此语句将返回表中与示例匹配的行数。默认值为true
@@ -47,7 +58,17 @@
                 enableSelectByExample：表示是否应生成 select by example 语句。该语句允许在运行时生成许多不同的动态查询。默认值为true。
                 selectByExampleQueryId：这个值将被添加到select by example语句的选择列表中，格式为：“'<value>' as QUERYID”。
         -->
-        <table tableName="article_info_tb" domainObjectName="articleInfoTb" mapperName="articleInfoMapper"/>
-
+        <table tableName="article_info_tb" domainObjectName="ArticleInfoTb" mapperName="ArticleInfoMapper"
+               enableInsert="false" enableCountByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" enableUpdateByExample="false" selectByExampleQueryId="false"/>
+        <table tableName="customer_info_tb" domainObjectName="CustomerInfoTb" mapperName="CustomerInfoMapper"
+               enableInsert="false" enableCountByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" enableUpdateByExample="false" selectByExampleQueryId="false"/>
+        <table tableName="func_page_tb" domainObjectName="FuncPageTb" mapperName="FuncPageMapper"
+               enableInsert="false" enableCountByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" enableUpdateByExample="false" selectByExampleQueryId="false"/>
+        <table tableName="publish_info_tb" domainObjectName="PublishInfoTb" mapperName="PublishInfoMapper"
+               enableInsert="false" enableCountByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" enableUpdateByExample="false" selectByExampleQueryId="false"/>
     </context>
 </generatorConfiguration>
