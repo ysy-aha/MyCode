@@ -1,0 +1,8 @@
+server:
+  port: 999
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 1GB # 总上传
+      max-request-size: 5GB # 单次上传
